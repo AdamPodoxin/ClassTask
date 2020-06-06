@@ -16,3 +16,13 @@ String formatTimeOfDay(TimeOfDay timeOfDay) {
   output = "$hourStr:$minuteStr";
   return output;
 }
+
+TimeOfDay getTimeOfDayFromFormattedString(String str) {
+  final List<String> components = str.split(":");
+  final int hour = int.parse(components[0]), minute = int.parse(components[1]);
+
+  return new TimeOfDay(
+    hour: hour,
+    minute: minute,
+  );
+}

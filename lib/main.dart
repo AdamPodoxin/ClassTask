@@ -3,6 +3,7 @@ import 'Classes/class.dart';
 import 'Classes/utility.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(
       MaterialApp(
@@ -84,6 +85,8 @@ class ClassTaskState extends State<ClassTask> {
             _editingClass = false;
           });
 
+          saveClasses();
+
           Navigator.of(this.context).pop();
         },
       );
@@ -99,15 +102,15 @@ class ClassTaskState extends State<ClassTask> {
         color: Colors.red[400],
         padding: const EdgeInsets.all(16),
         onPressed: () {
-          if (index >= 0) {
-            setState(() {
-              classes.removeAt(index);
-            });
-          }
-
           setState(() {
+            if (index >= 0) {
+              classes.removeAt(index);
+            }
+
             _editingClass = false;
           });
+
+          saveClasses();
 
           Navigator.of(this.context).pop();
         },
@@ -215,6 +218,46 @@ class ClassTaskState extends State<ClassTask> {
     }
   }
 
+  void saveClasses() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<String> classNames = new List<String>(),
+        classStartTimes = new List<String>(),
+        classEndTimes = new List<String>();
+
+    for (Class c in classes) {
+      classNames.add(c.name);
+      classStartTimes.add(formatTimeOfDay(c.startTime));
+      classEndTimes.add(formatTimeOfDay(c.endTime));
+    }
+
+    prefs.setStringList("class_names", classNames);
+    prefs.setStringList("class_start_times", classStartTimes);
+    prefs.setStringList("class_end_times", classEndTimes);
+  }
+
+  void loadClasses() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final List<String> classNames = prefs.getStringList("class_names"),
+        classStartTimes = prefs.getStringList("class_start_times"),
+        classEndTimes = prefs.getStringList("class_end_times");
+
+    List<Class> loadedClasses = new List<Class>();
+
+    for (int i = 0; i < classNames.length; i++) {
+      loadedClasses.add(new Class(
+        classNames[i],
+        getTimeOfDayFromFormattedString(classStartTimes[i]),
+        getTimeOfDayFromFormattedString(classEndTimes[i]),
+      ));
+    }
+
+    setState(() {
+      classes = loadedClasses;
+    });
+  }
+
   @override
   void dispose() {
     _classNameController.dispose();
@@ -224,6 +267,8 @@ class ClassTaskState extends State<ClassTask> {
   @override
   void initState() {
     super.initState();
+
+    loadClasses();
   }
 
   @override
