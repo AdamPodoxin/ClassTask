@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
+
 class Class {
   String name;
-  DateTime startTime, endTime;
+  TimeOfDay startTime, endTime;
 
   Class(
     this.name,

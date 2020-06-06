@@ -1,5 +1,6 @@
 import 'Widgets/classWidget.dart';
 import 'Classes/class.dart';
+import 'Classes/utility.dart';
 
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,9 @@ class ClassTaskState extends State<ClassTask> {
   final _classNameController = TextEditingController();
 
   bool _editingClass = false;
+
+  TimeOfDay _selectedStartTime = TimeOfDay.now(),
+      _selectedEndTime = TimeOfDay.now();
 
   void createNewClass(Class newClass) {
     setState(() {
@@ -44,6 +48,12 @@ class ClassTaskState extends State<ClassTask> {
     });
   }
 
+  Future<Null> setStartTime() async {
+    TimeOfDay _time = TimeOfDay.now();
+    _time = await showTimePicker(context: context, initialTime: _time);
+    return _time;
+  }
+
   void showEditClassDialog(int index) {
     if (!_editingClass) {
       setState(() {
@@ -60,8 +70,8 @@ class ClassTaskState extends State<ClassTask> {
         onPressed: () {
           Class editedClass = new Class(
             _classNameController.text,
-            new DateTime(2000),
-            new DateTime(2000),
+            _selectedStartTime,
+            _selectedEndTime,
           );
 
           if (index < 0) {
@@ -118,7 +128,7 @@ class ClassTaskState extends State<ClassTask> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, StateSetter stateSetter) {
+          return StatefulBuilder(builder: (context, StateSetter setState) {
             return SimpleDialog(
               contentPadding: const EdgeInsets.only(
                 left: 50,
@@ -138,9 +148,53 @@ class ClassTaskState extends State<ClassTask> {
                 SizedBox(height: 12),
                 Row(
                   children: [
-                    deleteButton,
-                    SizedBox(width: 40),
-                    doneButton,
+                    FlatButton(
+                      child: Text(formatTimeOfDay(_selectedStartTime)),
+                      onPressed: () {
+                        TimeOfDay _time = _selectedStartTime;
+                        Future<Null> timePicker() async {
+                          _time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+
+                          if (_time == null) {
+                            _time = _selectedStartTime;
+                          }
+
+                          setState(() {
+                            _selectedStartTime = _time;
+                          });
+                        }
+
+                        timePicker();
+                      },
+                    ),
+                    SizedBox(width: 20),
+                    Text("to"),
+                    SizedBox(width: 20),
+                    FlatButton(
+                      child: Text(formatTimeOfDay(_selectedEndTime)),
+                      onPressed: () {
+                        TimeOfDay _time = _selectedEndTime;
+                        Future<Null> timePicker() async {
+                          _time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+
+                          if (_time == null) {
+                            _time = _selectedEndTime;
+                          }
+
+                          setState(() {
+                            _selectedEndTime = _time;
+                          });
+                        }
+
+                        timePicker();
+                      },
+                    ),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
                 ),

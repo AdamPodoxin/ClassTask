@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../Classes/class.dart';
+import '../Classes/utility.dart';
 
 class ClassWidget extends StatelessWidget {
   final Key key;
@@ -27,7 +28,10 @@ class ClassWidget extends StatelessWidget {
           myClass.name,
           textAlign: TextAlign.center,
         ),
-        subtitle: Text("${myClass.startTime} - ${myClass.endTime}"),
+        subtitle: Text(
+          "${formatTimeOfDay(myClass.startTime)} - ${formatTimeOfDay(myClass.endTime)}",
+          textAlign: TextAlign.center,
+        ),
         onTap: onTapFunction,
       ),
     );
