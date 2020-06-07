@@ -51,7 +51,10 @@ class ClassTaskState extends State<ClassTask> {
 
   Future<Null> setStartTime() async {
     TimeOfDay _time = TimeOfDay.now();
-    _time = await showTimePicker(context: context, initialTime: _time);
+    _time = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
     return _time;
   }
 
@@ -125,6 +128,9 @@ class ClassTaskState extends State<ClassTask> {
 
       if (index >= 0) {
         _classNameController.text = classes[index].name;
+
+        _selectedStartTime = classes[index].startTime;
+        _selectedEndTime = classes[index].endTime;
       }
 
       showDialog(
